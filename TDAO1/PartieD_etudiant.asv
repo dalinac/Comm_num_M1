@@ -1,0 +1,73 @@
+clear; clc;
+
+NB = 512;
+
+Fs = 48000;  % Fréquence d'échantillonnage [Hz]
+N      = 30;      % Ordre du filtre
+Fstop1 = 4000;    % Fréquence de début bande coupée basse  [Hz]
+Fpass1 = 6000;    % Fréquence de début bande passante      [Hz]
+Fpass2 = 14000;   % Fréquence de fin bande passante        [Hz]
+Fstop2 = 16000;   % Fréquence de fin bande coupée haute    [Hz]
+Wstop1 = 60;      % Poids bande coupée basse (atténuation)
+Wpass  = 1;       % Poids bande passante (ripple)
+Wstop2 = 60;      % Poids bande coupée haute (atténuation)
+dens   = 20;      % Densité de la grille de calcul firpm
+
+b  = firpm(N, [0 Fstop1 Fpass1 Fpass2 Fstop2 Fs/2]/(Fs/2), [0 0 1 1 0 ...
+           0], [Wstop1 Wpass Wstop2], {dens});
+Hd = dfilt.dffir(b);
+
+%% D.1 : 
+[H,w] = freqz(b,1,NB);
+figure(12);clf;
+freq   = w / (2*pi) * Fs / 1000;   % Fréquence en kHz
+% Retard de groupe
+[gd, w_gd] = grpdelay(b, 1, NB);
+freq_gd    = w_gd / (2*pi) * Fs / 1000;   % en kHz
+gd_ms      = gd / Fs * 1000;              % en ms
+
+figure(12); clf;
+[ax, h1, h2] = plotyy(freq, 20*log10(abs(H)), ...
+                      freq_gd, gd_ms);
+xlabel('Frequency [kHz]'); %%%%%%%%%%%% modiffierrrrrrrrrr ? 
+axes(ax(1));
+ylabel('Magnitude (dB)');
+ylim([-80, 5]);
+grid on;
+% Axe droit : retard de groupe en ms
+axes(ax(2));
+ylabel('Group delay (ms)');
+title('Réponse fréquentielle du filtre RIF');
+
+
+%% D.2 : 
+Ns=N+1;
+figure(11);clf;
+subplot(1, 2, 1);
+stem(0:Ns-1, b, '--o', 'filled', 'LineWidth', 2);xlabel('sample ')
+ylabel('Magnitude'); 
+title('Coefficients b(n)');
+grid on;
+subplot(1, 2, 2);
+plot(freq_gd, gd_ms, 'LineWidth', 2);
+xlabel('Frequency [kHz]'); 
+ylabel('group delay') ;
+title('Retard de groupe');
+xlim([0, Fs/2/1000]);
+grid on;
+
+
+%% D.3 
+figure(14);clf;
+[music, fs] = audioread('funky.wav');
+N_samples =length(music);
+tic;
+musicF = filter(b, 1, music);
+toc;
+subplot(2,2,1);plot(music);
+subplot(2,2,2);specgram(music,512,Fs/1000);ylabel('Frequency [kHz]');set(gca, 'XTick', []);
+subplot(2,2,3);plot(musicF);
+subplot(2,2,4);specgram(musicF,512,Fs/1000);ylabel('Frequency [kHz]');set(gca, 'XTick', []);
+sgtitle('Comparaison signal original / filtré (funky.wav)');
+
+% sound(musicF/max(musicF)/2,Fs);
