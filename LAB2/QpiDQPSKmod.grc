@@ -1,0 +1,298 @@
+options:
+  parameters:
+    author: ''
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: hb
+    hier_block_src_path: '.:'
+    id: QpiDQPSKmod
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: pi/4-DQPSK mod
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: my_const_1
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[1, (1+1j)/math.sqrt(2)]'
+    dims: '1'
+    normalization: digital.constellation.NO_NORMALIZATION
+    npwr: '0'
+    precision: '8'
+    rot_sym: '2'
+    soft_dec_lut: None
+    sym_map: '[0, 1]'
+    type: calcdist
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [344, 8.0]
+    rotation: 0
+    state: enabled
+- name: subCarr_K
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 64.0]
+    rotation: 0
+    state: enabled
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: (1+1j)/math.sqrt(2)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 200.0]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_xx_0
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [832, 272.0]
+    rotation: 0
+    state: enabled
+- name: blocks_stream_mux_0
+  id: blocks_stream_mux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengths: (1, subCarr_K)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 208.0]
+    rotation: 0
+    state: enabled
+- name: blocks_stream_to_vector_0_0
+  id: blocks_stream_to_vector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: subCarr_K+1
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [304, 280.0]
+    rotation: 180
+    state: enabled
+- name: blocks_vector_source_x_1
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: (0,1,)*(subCarr_K//2)+(0,)
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 268.0]
+    rotation: 180
+    state: enabled
+- name: blocks_vector_to_stream_0_0
+  id: blocks_vector_to_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: subCarr_K+1
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 360.0]
+    rotation: 0
+    state: enabled
+- name: digital_constellation_encoder_bc_0_0_0
+  id: digital_constellation_encoder_bc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: my_const_1
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 200.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nfrom gnuradio import\
+      \ gr\nimport numpy as np\nimport cmath\nimport math\n\n\nclass blk(gr.sync_block):\
+      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
+      \"Embedded Python Block example - a simple multiply const\"\"\"\n\n    def __init__(self,vsize=5):\
+      \  # only default arguments here\n        \"\"\"arguments to this function show\
+      \ up as parameters in GRC\"\"\"\n        gr.sync_block.__init__(\n         \
+      \   self,\n            name='DQPSK_mod',   # will show up in GRC\n         \
+      \   in_sig=[(np.complex64,vsize)],\n            out_sig=[(np.complex64,vsize)]\n\
+      \        )\n        self.vsize = vsize\n\n    def work(self, input_items, output_items):\n\
+      \        # R\xE9cup\xE9ration des vecteurs en entr\xE9e et en sortie\n     \
+      \   in_vector = input_items[0]\n        out_vector = output_items[0]\n     \
+      \   \n        # Application du filtre IIR sur chaque ligne du vecteur\n    \
+      \    for i in range(in_vector.shape[0]):\n#            out_vector[i][0] = cmath.exp(1j\
+      \ * math.pi / 4)\n            out_vector[i][0] = in_vector[i][0]\n         \
+      \   for j in range(self.vsize-1):                \n                out_vector[i][j+1]\
+      \ = in_vector[i][j+1] * in_vector[i][j]\n            #out_vector[i] = np.pi/4.0-out_vector[i][::-1]\n\
+      \            #out_vector[i]= in_vector[i]\n        \n        # Retourne le nombre\
+      \ d'\xE9l\xE9ments trait\xE9s\n        return len(out_vector)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vsize: subCarr_K+1
+  states:
+    _io_cache: ('DQPSK_mod', 'blk', [('vsize', '5')], [('0', 'complex', 5)], [('0',
+      'complex', 5)], 'Embedded Python Block example - a simple multiply const', ['vsize'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 320.0]
+    rotation: 0
+    state: enabled
+- name: import_0
+  id: import
+  parameters:
+    alias: ''
+    comment: ''
+    imports: import math
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [232, 8.0]
+    rotation: 0
+    state: enabled
+- name: pad_sink_0
+  id: pad_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: out
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [992, 280.0]
+    rotation: 0
+    state: enabled
+- name: pad_source_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: in
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 256.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_const_source_x_0, '0', blocks_stream_mux_0, '0']
+- [blocks_multiply_xx_0, '0', pad_sink_0, '0']
+- [blocks_stream_mux_0, '0', blocks_stream_to_vector_0_0, '0']
+- [blocks_stream_to_vector_0_0, '0', epy_block_0, '0']
+- [blocks_vector_source_x_1, '0', digital_constellation_encoder_bc_0_0_0, '0']
+- [blocks_vector_to_stream_0_0, '0', blocks_multiply_xx_0, '1']
+- [digital_constellation_encoder_bc_0_0_0, '0', blocks_multiply_xx_0, '0']
+- [epy_block_0, '0', blocks_vector_to_stream_0_0, '0']
+- [pad_source_0, '0', blocks_stream_mux_0, '1']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.9.2

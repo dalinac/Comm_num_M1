@@ -1,0 +1,527 @@
+options:
+  parameters:
+    author: Lydia Ali Ahmed & Dalina Chabane
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: OFDM_wav_TS_step_03_04_C
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: OFDM_wav_TS_step_03_04_C
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '2048000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+
+- name: subCarr_K
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [344, 12]
+    rotation: 0
+    state: enabled
+
+- name: my_const_1
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.NO_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 3, 2]'
+    type: calcdist
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [456, 12]
+    rotation: 0
+    state: enabled
+
+- name: my_const_2
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.NO_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 3, 2]'
+    type: calcdist
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [656, 12]
+    rotation: 0
+    state: enabled
+
+# Source principale : sequence fixe [0,1,2,3]
+- name: blocks_vector_source_x_0
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Sequence fixe [00,01,10,11]'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: '[0, 1, 2, 3]'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 200]
+    rotation: 0
+    state: enabled
+
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 200]
+    rotation: 0
+    state: enabled
+
+- name: digital_constellation_encoder_bc_0
+  id: digital_constellation_encoder_bc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: my_const_1
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 192]
+    rotation: 0
+    state: enabled
+
+# Stream to Tagged Stream : tag packet_len=4 pour synchro
+- name: blocks_stream_to_tagged_stream_0
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Tag packet_len=4 pour synchro'
+    len_tag_key: packet_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: '4'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 192]
+    rotation: 0
+    state: enabled
+
+# Multiply Const 0.707+0.707j : decalage pi/4
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Decalage pi/4'
+    const: 0.707106781+0.707106781j
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 192]
+    rotation: 0
+    state: enabled
+
+# Constant Source pilote : 0.707+0.707j
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Symbole pilote e^(j*pi/4)'
+    const: 0.707106781+0.707106781j
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 300]
+    rotation: 0
+    state: enabled
+
+# Stream Mux : 1 pilote + 4 donnees
+- name: blocks_stream_mux_0
+  id: blocks_stream_mux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengths: (1, 4)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 220]
+    rotation: 0
+    state: enabled
+
+# Delay 1 : memoire differentielle
+- name: blocks_delay_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Memoire differentielle'
+    delay: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    showports: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [840, 340]
+    rotation: 180
+    state: enabled
+
+# Multiply : encodage differentiel s[n] = s[n-1] * delta[n]
+- name: blocks_multiply_xx_0
+  id: blocks_multiply_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Encodage differentiel'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 220]
+    rotation: 0
+    state: enabled
+
+# Stream Demux : separe pilote et donnees
+- name: blocks_stream_demux_0
+  id: blocks_stream_demux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengths: (1, 4)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_outputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 220]
+    rotation: 0
+    state: enabled
+
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: 'Jette le pilote'
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1320, 160]
+    rotation: 0
+    state: enabled
+
+# Complex to Arg : phase du signal pi/4-DQPSK
+- name: blocks_complex_to_arg_0
+  id: blocks_complex_to_arg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Phase pi/4-DQPSK module'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1320, 240]
+    rotation: 0
+    state: enabled
+
+# Multiply Const 1.27324 = 4/pi : normalise en unites de pi/4
+- name: blocks_multiply_const_vxx_1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Normalise en unites de pi/4'
+    const: '1.27324'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1480, 240]
+    rotation: 0
+    state: enabled
+
+# Deuxieme source : QPSK ref pour comparaison
+- name: blocks_vector_source_x_0_0
+  id: blocks_vector_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'QPSK ref pour comparaison'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    repeat: 'True'
+    tags: '[]'
+    type: byte
+    vector: '[0, 1, 2, 3]'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 400]
+    rotation: 0
+    state: enabled
+
+- name: digital_constellation_encoder_bc_0_0
+  id: digital_constellation_encoder_bc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'QPSK ref'
+    constellation: my_const_2
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 392]
+    rotation: 0
+    state: enabled
+
+- name: blocks_complex_to_arg_0_0
+  id: blocks_complex_to_arg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Phase QPSK ref'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [400, 392]
+    rotation: 0
+    state: enabled
+
+- name: blocks_multiply_const_vxx_2
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Normalise QPSK ref'
+    const: '1.27324'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 392]
+    rotation: 0
+    state: enabled
+
+# Time Sink : trigger sur tag packet_len pour synchro
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color2: red
+    color3: green
+    comment: ''
+    ctrlpanel: 'True'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: ''
+    label1: Signal 1
+    label2: Signal 2
+    label3: Signal 3
+    legend: 'True'
+    marker1: '1'
+    marker2: '1'
+    marker3: '-1'
+    name: '""'
+    nconnections: '2'
+    size: '32'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style2: '1'
+    style3: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_TAG
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '"packet_len"'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width2: '1'
+    width3: '1'
+    ylabel: Angle [pi/4]
+    ymax: '4'
+    ymin: '-4'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1640, 200]
+    rotation: 0
+    state: enabled
+
+connections:
+# Source -> Throttle -> Constellation Encoder -> Tagged Stream
+- [blocks_vector_source_x_0, '0', blocks_throttle2_0, '0']
+- [blocks_throttle2_0, '0', digital_constellation_encoder_bc_0, '0']
+- [digital_constellation_encoder_bc_0, '0', blocks_stream_to_tagged_stream_0, '0']
+# Tagged Stream -> Multiply Const pi/4 -> Stream Mux in1
+- [blocks_stream_to_tagged_stream_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_multiply_const_vxx_0, '0', blocks_stream_mux_0, '1']
+# Constant Source pilote -> Stream Mux in0
+- [analog_const_source_x_0, '0', blocks_stream_mux_0, '0']
+# Stream Mux -> Delay et Multiply
+- [blocks_stream_mux_0, '0', blocks_delay_0, '0']
+- [blocks_stream_mux_0, '0', blocks_multiply_xx_0, '0']
+- [blocks_delay_0, '0', blocks_multiply_xx_0, '1']
+# Multiply -> Stream Demux
+- [blocks_multiply_xx_0, '0', blocks_stream_demux_0, '0']
+# Stream Demux port 0 -> Null Sink
+- [blocks_stream_demux_0, '0', blocks_null_sink_0, '0']
+# Stream Demux port 1 -> Complex to Arg -> Normalise -> Time Sink in0
+- [blocks_stream_demux_0, '1', blocks_complex_to_arg_0, '0']
+- [blocks_complex_to_arg_0, '0', blocks_multiply_const_vxx_1, '0']
+- [blocks_multiply_const_vxx_1, '0', qtgui_time_sink_x_0, '0']
+# QPSK ref -> Complex to Arg -> Normalise -> Time Sink in1
+- [blocks_vector_source_x_0_0, '0', digital_constellation_encoder_bc_0_0, '0']
+- [digital_constellation_encoder_bc_0_0, '0', blocks_complex_to_arg_0_0, '0']
+- [blocks_complex_to_arg_0_0, '0', blocks_multiply_const_vxx_2, '0']
+- [blocks_multiply_const_vxx_2, '0', qtgui_time_sink_x_0, '1']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.10.0

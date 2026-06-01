@@ -1,0 +1,33 @@
+id: QpiDQPSKmod
+label: QT GUI pi/4-DQPSK mod
+category: '[GRC Hier Blocks]'
+flags: need_qt_gui
+
+parameters:
+-   id: gui_hint
+    label: GUI Hint
+    dtype: gui_hint
+    hide: part
+
+inputs:
+-   label: in
+    dtype: complex
+    vlen: 1
+
+outputs:
+-   label: out
+    dtype: complex
+    vlen: 1
+
+templates:
+    imports: 'from QpiDQPSKmod import QpiDQPSKmod  # grc-generated hier_block'
+    make: 'QpiDQPSKmod()
+
+        <% win = ''self.%s''%id %>
+
+        ${ gui_hint() % win }'
+    callbacks: []
+
+documentation: ./QpiDQPSKmod.py
+grc_source: /home/bida/Downloads/LAB2-20260323/QpiDQPSKmod.grc
+file_format: 1

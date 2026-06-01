@@ -1,0 +1,25 @@
+id: QpiDQPSKdemo
+label: pi/4-DQPSK demod
+category: '[GRC Hier Blocks]'
+
+parameters: []
+
+inputs:
+-   label: in
+    dtype: complex
+    vlen: 1
+
+outputs:
+-   label: out
+    dtype: complex
+    vlen: 1
+
+templates:
+    imports: 'from QpiDQPSKdemo import QpiDQPSKdemo  # grc-generated hier_block'
+    make: QpiDQPSKdemo()
+    callbacks: []
+
+documentation: ./QpiDQPSKdemo.py
+grc_source: /home/bida/Downloads/LAB2-20260323/QpiDQPSKdemo.grc
+
+file_format: 1
